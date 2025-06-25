@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ClearKey Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/shaka-player@4.7.1/dist/shaka-player.compiled.min.js"></script>
+</head>
+<body>
+  <h2>ClearKey Live Stream Test</h2>
+  <video id="video" width="720" controls autoplay></video>
+
+  <script>
+    async function initPlayer() {
+      const video = document.getElementById('video');
+      const player = new shaka.Player(video);
+
+      // DRM configuration
+      player.configure({
+        drm: {
+          clearKeys: {
+            'ae26845bd33038a9c0774a0981007294': '63ac662dde310cfb4cc6f9b43b34196d'
+          }
+        }
+      });
+
+      // Listen for error events.
+      player.addEventListener('error', e => {
+        console.error('Shaka Error Event:', e.detail);
+      });
+
+      try {
+        console.log("Trying to load stream...");
+        await player.load('https://ottb.live.cf.ww.aiv-cdn.net/lhr-nitro/live/clients/dash/enc/wf8usag51e/out/v1/bd3b0c314fff4bb1ab4693358f3cd2d3/cenc.mpd');
+        console.log('Stream loaded!');
+      } catch (error) {
+        console.error('Error loading stream:', error);
+      }
+    }
+
+    shaka.polyfill.installAll();
+    if (shaka.Player.isBrowserSupported()) {
+      initPlayer();
+    } else {
+      console.error('Browser not supported!');
+    }
+  </script>
+</body>
+</html>
